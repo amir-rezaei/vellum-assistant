@@ -1389,7 +1389,12 @@ export async function startVoiceTurn(
           } else if (msg.type === "conversation_error") {
             lastError = msg.userMessage;
           }
-          broadcastMessage(msg);
+          // Strip raw voice control markers before broadcasting to observers
+          let broadcastMsg = msg;
+          if (msg.type === "assistant_text_delta") {
+            broadcastMsg = { ...msg, delta: stripInternalSpeechMarkers(msg.delta) };
+          }
+          broadcastMessage(broadcastMsg);
 
           // Forward voice-relevant events to the real-time event sink
           if (msg.type === "assistant_text_delta") {
