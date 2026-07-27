@@ -43,6 +43,7 @@ import { getReplayWindow } from "../assistant-stream-state.js";
 import { ACTOR_PRINCIPALS, GATEWAY_PRINCIPALS } from "../auth/route-policy.js";
 import { DEFAULT_HEARTBEAT_INTERVAL_MS } from "../client-health.js";
 import { resolveActorPrincipalIdForLocalGuardianSync } from "../local-actor-identity.js";
+import { getSubagentManager } from "../../subagent/index.js";
 import {
   BadRequestError,
   NotFoundError,
@@ -497,6 +498,33 @@ export function handleSubscribeAssistantEvents(
                 highWaterReplaySeq = replayed.seq;
               }
             }
+          }
+        }
+
+        // On (re)subscribe for a specific conversation, sync subagent statuses if any children exist
+        if (filter.conversationId) {
+          try {
+            const manager = getSubagentManager();
+            const children = manager.getChildrenOf(filter.conversationId);
+            for (const childId of children) {
+              const childState = manager.getSubagentState(childId);
+              if (childState) {
+                controller.enqueue(
+                  encoder.encode(
+                    formatSseFrame({
+                      type: "subagent_status_changed",
+                      subagentId: childId,
+                      status: childState.status,
+                      error: childState.error,
+                      usage: childState.usage,
+                    }),
+                  ),
+                );
+                instrumentation.eventsDelivered += 1;
+              }
+            }
+          } catch {
+            /* best-effort subagent status sync */
           }
         }
 
