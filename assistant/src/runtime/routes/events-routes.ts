@@ -506,25 +506,24 @@ export function handleSubscribeAssistantEvents(
           try {
             const manager = getSubagentManager();
             const children = manager.getChildrenOf(filter.conversationId);
-            for (const childId of children) {
-              const childState = manager.getSubagentState(childId);
-              if (childState) {
-                controller.enqueue(
-                  encoder.encode(
-                    formatSseFrame({
-                      type: "subagent_status_changed",
-                      subagentId: childId,
-                      status: childState.status,
-                      error: childState.error,
-                      usage: childState.usage,
-                    }),
-                  ),
-                );
-                instrumentation.eventsDelivered += 1;
-              }
+            const MAX_SUBAGENT_REPLAY = 50;
+            const itemsToReplay = children.slice(-MAX_SUBAGENT_REPLAY);
+            for (const child of itemsToReplay) {
+              controller.enqueue(
+                encoder.encode(
+                  formatSseFrame({
+                    type: "subagent_status_changed",
+                    subagentId: child.config.id,
+                    status: child.status,
+                    ...(child.error != null ? { error: child.error } : {}),
+                    usage: child.usage,
+                  }),
+                ),
+              );
+              instrumentation.eventsDelivered += 1;
             }
           } catch {
-            /* best-effort subagent status sync */
+            // Subagent manager might not be initialized in minimal contexts
           }
         }
 
