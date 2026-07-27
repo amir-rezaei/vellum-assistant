@@ -152,6 +152,8 @@ function stripGuardianApprovalMarkers(text: string): string {
   return result;
 }
 
+const ESCALATE_MARKER_REGEX = /\[ESCALATE\]/g;
+
 export function stripInternalSpeechMarkers(text: string): string {
   let result = stripGuardianApprovalMarkers(text);
   result = result
@@ -163,6 +165,7 @@ export function stripInternalSpeechMarkers(text: string): string {
     .replace(END_CALL_MARKER_REGEX, "")
     .replace(HOLD_VERDICT_TOKEN_REGEX, "")
     .replace(ESCALATE_VERDICT_TOKEN_REGEX, "")
+    .replace(ESCALATE_MARKER_REGEX, "")
     .replace(GUARDIAN_TIMEOUT_MARKER_REGEX, "")
     .replace(GUARDIAN_UNAVAILABLE_MARKER_REGEX, "");
   return result;
@@ -187,6 +190,7 @@ const CONTROL_MARKER_STRINGS = [
   "[END_CALL]",
   "[0]",
   "[1]",
+  "[ESCALATE]",
   "[GUARDIAN_TIMEOUT]",
   "[GUARDIAN_UNAVAILABLE]",
 ];
