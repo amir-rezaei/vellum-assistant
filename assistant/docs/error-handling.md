@@ -71,7 +71,7 @@ Returning `undefined` is acceptable only for **lookup functions** where "not fou
 | Subagent manager (`subagent/manager.ts`)              | Throws for precondition violations, string literal unions for expected outcomes | Depth limit exceeded is a bug; `sendMessage` returns `'not_found' \| 'terminal' \| 'queue_full'` as expected states            |
 | Interactive UI (`cli/commands/ui.ts`)                 | Result object (`InteractiveUiResult`) with `status` + exit codes                | User cancel and timeout are expected operational outcomes, not errors. IPC failures are exceptional.                           |
 
-## 4. Interactive UI Interactions (assistant ui confirm / assistant ui request)
+## 4. Interactive UI Interactions (`assistant ui confirm` / `assistant ui request`)
 
 The `assistant ui` commands present blocking interactive surfaces (confirmations, forms) to the user and wait for a response. Their error model distinguishes three categories:
 
