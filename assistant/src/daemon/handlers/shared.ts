@@ -734,6 +734,7 @@ export function renderHistoryContent(
           matched.imageDataList = imageDataList;
         }
         if (imageAttachmentIds.length > 0) {
+          matched.imageAttachmentId = imageAttachmentIds[0];
           matched.imageAttachmentIds = imageAttachmentIds;
         }
       }
