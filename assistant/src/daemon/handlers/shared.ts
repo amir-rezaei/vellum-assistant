@@ -680,6 +680,9 @@ export function renderHistoryContent(
       if (matched) {
         matched.result = resultContent;
         matched.isError = isError;
+        if (matched.completedAt == null) {
+          matched.completedAt = typeof block._completedAt === "number" ? block._completedAt : Date.now();
+        }
       } else {
         toolCalls.push({
           name: "web_search",
@@ -722,6 +725,9 @@ export function renderHistoryContent(
       if (matched) {
         matched.result = resultContent;
         matched.isError = isError;
+        if (matched.completedAt == null) {
+          matched.completedAt = typeof block._completedAt === "number" ? block._completedAt : Date.now();
+        }
         // Carry the persisted error classification onto the history row so a
         // client can re-derive an error-specific surface after a reload (e.g.
         // `acp_claude_oauth_missing` re-raising the inline Connect card),
