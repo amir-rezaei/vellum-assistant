@@ -35,3 +35,9 @@ export async function selectedBackendSupportsMultimodal(): Promise<boolean> {
     await import("./embedding-backend.js");
   return withConfig(getConfig());
 }
+
+/** Generate sparse stemmed tokens for text inputs (compute-only layer 1). */
+export async function generateSparseTokens(text: string): Promise<string[]> {
+  const { tokenizeStemmed } = await import("./sparse-tokenize.js");
+  return tokenizeStemmed(text);
+}
