@@ -1392,7 +1392,8 @@ export async function startVoiceTurn(
           // Strip raw voice control markers before broadcasting to observers
           let broadcastMsg = msg;
           if (msg.type === "assistant_text_delta") {
-            broadcastMsg = { ...msg, delta: stripInternalSpeechMarkers(msg.delta) };
+            const rawText = (msg as any).text ?? (msg as any).delta ?? "";
+            broadcastMsg = { ...msg, text: stripInternalSpeechMarkers(rawText) } as typeof msg;
           }
           broadcastMessage(broadcastMsg);
 
